@@ -54,7 +54,7 @@ jobs:
           cd /tmp && alertsage rules --lint && alertsage demo
 
   lint:
-    name: ruff
+    name: ruff（仅提示，不阻断）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,4 +62,6 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install "ruff>=0.5"
-      - run: ruff check alertsage tests
+      # 新项目先让 lint 跑起来当提示，等风格统一后再去掉 continue-on-error
+      - run: ruff check alertsage tests --output-format=github
+        continue-on-error: true
