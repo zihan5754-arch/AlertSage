@@ -1,0 +1,2 @@
+# 核心引擎零第三方依赖，仅需 Python 3.10+
+# 需要 HTTP 服务（FastAPI 版）时再装 requirements-api.txt

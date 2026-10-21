@@ -1,0 +1,77 @@
+[
+  {
+    "id": "NET-SSH-BRUTE-001",
+    "title": "SSH 暴力破解",
+    "severity": "high",
+    "category": "auth",
+    "confidence": 0.8,
+    "mitre": ["T1110.001"],
+    "description": "22 端口出现大量认证失败，或告警类型直接标记为暴力破解。",
+    "match": {
+      "any": [
+        {
+          "all": [
+            {"field": "dst_port", "equals": 22},
+            {"any": [
+              {"field": "alert_type", "contains_any": ["brute", "暴力", "failed", "invalid user"]},
+              {"field": "raw_log", "contains_any": ["Failed password", "Invalid user", "authentication failure"]}
+            ]}
+          ]
+        },
+        {"field": "alert_type", "contains": "ssh_bruteforce"}
+      ]
+    },
+    "recommendations": [
+      "封禁来源 IP，检查是否已有成功登录（Accepted password）",
+      "确认目标主机是否允许公网 22 端口直连，建议改端口/加跳板",
+      "开启 fail2ban 或云厂商的暴力破解防护"
+    ]
+  },
+  {
+    "id": "NET-CRED-001",
+    "title": "账号撞库/密码喷洒",
+    "severity": "medium",
+    "category": "auth",
+    "confidence": 0.7,
+    "mitre": ["T1110.004"],
+    "description": "登录接口出现多账号低频尝试，典型撞库或密码喷洒特征。",
+    "match": {
+      "any": [
+        {"field": "alert_type", "contains_any": ["credential", "撞库", "password spray", "spraying"]},
+        {
+          "all": [
+            {"field": "target_url", "regex": "(?i)(/login|/signin|/auth|/oauth)"},
+            {"field": "status_code", "in": [401, 403]},
+            {"field": "action", "equals": "allowed"}
+          ]
+        }
+      ]
+    },
+    "recommendations": [
+      "按 source_ip 统计失败次数与账号离散度",
+      "对该网段加图形验证码/滑块，必要时封禁",
+      "排查是否有账号在尝试成功后立即修改密码/绑定信息"
+    ]
+  },
+  {
+    "id": "NET-SCAN-001",
+    "title": "漏洞扫描器/端口扫描",
+    "severity": "low",
+    "category": "recon",
+    "confidence": 0.65,
+    "mitre": ["T1595"],
+    "weight_delta": -8,
+    "description": "User-Agent 或行为与常见扫描器一致，通常为资产测绘或漏洞扫描。",
+    "match": {
+      "any": [
+        {"field": "user_agent", "regex": "(?i)(nikto|nmap|sqlmap|acunetix|nessus|masscan|zgrab|nuclei)"},
+        {"field": "alert_type", "contains_any": ["port scan", "端口扫描", "scan detected"]}
+      ]
+    },
+    "recommendations": [
+      "确认是否为我方授权扫描（对照资产测绘/漏扫计划）",
+      "非授权来源则封禁并观察后续利用行为",
+      "优先关注扫描器是否命中高危路径"
+    ]
+  }
+]

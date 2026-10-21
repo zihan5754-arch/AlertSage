@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AlertSage 研判报告</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+         margin: 0; padding: 32px; background: #f6f7f9; color: #1f2328; }
+  h1 { margin: 0 0 8px; font-size: 26px; }
+  .meta { color: #656d76; margin-bottom: 24px; }
+  .cards { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .card { background: #fff; border: 1px solid #d8dee4; border-radius: 10px;
+           padding: 16px 20px; min-width: 160px; }
+  .card .k { font-size: 12px; color: #656d76; }
+  .card .v { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  table { border-collapse: collapse; width: 100%; background: #fff;
+           border: 1px solid #d8dee4; border-radius: 10px; overflow: hidden; }
+  th, td { padding: 9px 12px; border-bottom: 1px solid #eaeef2; font-size: 13px; text-align: left; }
+  th { background: #f6f8fa; font-weight: 600; }
+  .analysis { background: #fff; border-left: 4px solid #0969da; padding: 12px 16px;
+               margin: 8px 0 16px; line-height: 1.7; }
+  .evidence { background: #fff; border: 1px solid #d8dee4; border-radius: 10px;
+               padding: 12px 16px 12px 32px; line-height: 1.8; font-size: 13px; }
+  footer { margin-top: 24px; color: #656d76; font-size: 12px; }
+</style>
+</head>
+<body>
+  <h1>AlertSage 研判报告</h1>
+  <div class="meta">共 183 条告警 · 自动定性率
+    85.2% · p95 0.49 ms</div>
+  <div class="cards">
+    <div class="card"><div class="k">真实攻击</div><div class="v">121</div></div>
+    <div class="card"><div class="k">疑似误报</div><div class="v">35</div></div>
+    <div class="card"><div class="k">待复核</div><div class="v">27</div></div>
+    <div class="card"><div class="k">平均风险分</div><div class="v">54.3</div></div>
+  </div>
+  <h2>处置优先级 Top 20</h2>
+  <table>
+    <thead><tr><th>#</th><th>结论</th><th>风险</th><th>误报概率</th><th>严重度</th><th>攻击类型</th><th>命中规则</th></tr></thead>
+    <tbody><tr><td>1</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>100</td><td>2%</td><td>critical</td><td>Log4Shell (CVE-2021-44228) 利用尝试</td><td>WEB-LOG4J-001, WEB-SSRF-001, ANOM-BURST</td></tr><tr><td>2</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>100</td><td>2%</td><td>critical</td><td>Log4Shell (CVE-2021-44228) 利用尝试</td><td>WEB-LOG4J-001, WEB-SSRF-001, ANOM-BURST</td></tr><tr><td>3</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>100</td><td>7%</td><td>critical</td><td>WebShell 上传/访问特征</td><td>WEB-WEBSHELL-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>4</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>100</td><td>2%</td><td>critical</td><td>SQL 注入 - 时间盲注</td><td>WEB-SQLI-002, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>5</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>100</td><td>2%</td><td>critical</td><td>Log4Shell (CVE-2021-44228) 利用尝试</td><td>WEB-LOG4J-001, WEB-SSRF-001, ANOM-BURST</td></tr><tr><td>6</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>99</td><td>4%</td><td>critical</td><td>命令注入</td><td>WEB-CMDI-001, REGEX-CMDI, ANOM-BURST</td></tr><tr><td>7</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>99</td><td>4%</td><td>critical</td><td>命令注入</td><td>WEB-CMDI-001, REGEX-CMDI, ANOM-BURST</td></tr><tr><td>8</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>96</td><td>7%</td><td>critical</td><td>WebShell 上传/访问特征</td><td>WEB-WEBSHELL-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>9</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>95</td><td>2%</td><td>critical</td><td>SQL 注入 - 时间盲注</td><td>WEB-SQLI-002, ANOM-BURST</td></tr><tr><td>10</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>94</td><td>6%</td><td>high</td><td>SQL 注入 - 布尔/联合永真式</td><td>WEB-SQLI-001, REGEX-SQLI, ANOM-BURST</td></tr><tr><td>11</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>94</td><td>6%</td><td>high</td><td>SQL 注入 - 布尔/联合永真式</td><td>WEB-SQLI-001, REGEX-SQLI, ANOM-BURST</td></tr><tr><td>12</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>94</td><td>6%</td><td>high</td><td>SQL 注入 - 布尔/联合永真式</td><td>WEB-SQLI-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>13</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>94</td><td>6%</td><td>high</td><td>SQL 注入 - 布尔/联合永真式</td><td>WEB-SQLI-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>14</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>92</td><td>8%</td><td>high</td><td>本地/远程文件包含与伪协议利用</td><td>WEB-LFI-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>15</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>91</td><td>10%</td><td>high</td><td>PowerShell 编码命令执行</td><td>HOST-PS-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>16</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>90</td><td>12%</td><td>high</td><td>SSH 暴力破解</td><td>NET-SSH-BRUTE-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>17</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>90</td><td>12%</td><td>high</td><td>SSH 暴力破解</td><td>NET-SSH-BRUTE-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>18</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>90</td><td>12%</td><td>high</td><td>SSH 暴力破解</td><td>NET-SSH-BRUTE-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>19</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>90</td><td>12%</td><td>high</td><td>SSH 暴力破解</td><td>NET-SSH-BRUTE-001, ANOM-BURST, ANOM-FANOUT</td></tr><tr><td>20</td><td style="color:#c0392b;font-weight:600">真实攻击</td><td>90</td><td>12%</td><td>high</td><td>SSH 暴力破解</td><td>NET-SSH-BRUTE-001, ANOM-BURST, ANOM-FANOUT</td></tr></tbody>
+  </table>
+  
+        <h2>证据链示例 · generic-459303af36cb</h2>
+        <p class="analysis">【倾向真实攻击】Log4Shell (CVE-2021-44228) 利用尝试、SSRF - 探测云元数据/内网服务、同源高频请求；ATT&amp;CK：T1190、T1090、T1595、T1110.001。风险分 100/100，误报概率 2%，置信度 99%。来源 185.220.101.4，目标资产 order-api。依据：另有 3 条规则独立命中；跨类别交叉证据 [&#x27;anomaly&#x27;, &#x27;web&#x27;]。</p>
+        <ul class="evidence"><li><code>rule</code> 另有 3 条规则独立命中 <b>(+18)</b></li><li><code>rule</code> 跨类别交叉证据 [&#x27;anomaly&#x27;, &#x27;web&#x27;] <b>(+4)</b></li><li><code>rule</code> 认证失败聚集，行为证据较强 <b>(+10)</b></li></ul>
+  <footer>由 AlertSage 自动生成，结论需人工复核后再对外。结论分布：真实攻击 121、待人工复核 27、疑似误报 35。</footer>
+</body>
+</html>

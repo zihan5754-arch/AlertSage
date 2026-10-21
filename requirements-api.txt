@@ -1,0 +1,5 @@
+# 可选：FastAPI 版本的服务（带 /docs、自动校验）
+# 安装：pip install -r requirements-api.txt
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.5

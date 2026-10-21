@@ -1,0 +1,213 @@
+[
+  {
+    "id": "WEB-SQLI-001",
+    "title": "SQL 注入 - 布尔/联合永真式",
+    "severity": "high",
+    "category": "web",
+    "confidence": 0.86,
+    "mitre": ["T1190"],
+    "description": "请求中出现 union select 或永真式闭合，属于最典型的注入探测/利用特征。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)(union(\\s|/\\*.*?\\*/)+select)"},
+        {"text": "regex:(?i)('|\"|%27)\\s*(or|and)\\s+('?\\d+'?)\\s*=\\s*('?\\d+'?)"},
+        {"text": "regex:(?i)(or|and)\\s+1\\s*=\\s*1"},
+        {"text": "regex:(?i)\\bwaitfor\\s+delay\\b"}
+      ]
+    },
+    "recommendations": [
+      "确认目标参数是否使用参数化查询，检查是否存在注入点",
+      "对来源 IP 临时封禁（WAF 策略或防火墙）",
+      "回溯该 IP 在近 24h 的请求，确认是否有成功注出数据的痕迹"
+    ]
+  },
+  {
+    "id": "WEB-SQLI-002",
+    "title": "SQL 注入 - 时间盲注",
+    "severity": "critical",
+    "category": "web",
+    "confidence": 0.9,
+    "mitre": ["T1190"],
+    "description": "sleep()/benchmark()/pg_sleep() 等延时函数被注入，通常是盲注工具在跑。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)(sleep|benchmark|pg_sleep)\\s*\\(\\s*\\d+"},
+        {"text": "regex:(?i)extractvalue\\s*\\(|updatexml\\s*\\("}
+      ]
+    },
+    "recommendations": [
+      "立即确认该接口是否可注入，必要时下线接口",
+      "封禁来源 IP 并通知业务方",
+      "检查数据库审计日志中是否有异常长查询"
+    ]
+  },
+  {
+    "id": "WEB-XSS-001",
+    "title": "跨站脚本（XSS）注入",
+    "severity": "high",
+    "category": "web",
+    "confidence": 0.75,
+    "mitre": ["T1059.007"],
+    "description": "参数中出现 script 标签、事件处理器或 javascript: 伪协议。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)<\\s*script[^>]*>"},
+        {"text": "regex:(?i)\\bon(error|load|click|mouseover)\\s*="},
+        {"text": "regex:(?i)javascript\\s*:"},
+        {"text": "regex:(?i)<\\s*(svg|img|iframe)[^>]*(on\\w+)?\\s*="}
+      ]
+    },
+    "recommendations": [
+      "核对输出编码是否到位（HTML 实体编码 / CSP）",
+      "确认 payload 是否被执行（看响应体是否原样回显）",
+      "对高频来源 IP 加验证码或限流"
+    ]
+  },
+  {
+    "id": "WEB-CMDI-001",
+    "title": "命令注入",
+    "severity": "critical",
+    "category": "web",
+    "confidence": 0.88,
+    "mitre": ["T1059.004"],
+    "description": "参数中拼接了 shell 元字符与系统命令（whoami/cat/curl 等）。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)[;|&`$]\\s*(whoami|id|uname|cat|ls|curl|wget|bash|sh|nc|ping)\\b"},
+        {"text": "regex:(?i)\\$\\(\\s*(whoami|id|cat|curl|wget)\\b"},
+        {"text": "regex:(?i)\\|\\|\\s*(wget|curl)\\s+http"}
+      ]
+    },
+    "recommendations": [
+      "定位命令执行接口，检查是否过滤了 shell 元字符",
+      "封禁来源 IP，确认服务器是否有异常进程/外连",
+      "排查是否有写入型痕迹（临时目录、cron、计划任务）"
+    ]
+  },
+  {
+    "id": "WEB-PATH-001",
+    "title": "路径穿越",
+    "severity": "high",
+    "category": "web",
+    "confidence": 0.8,
+    "mitre": ["T1083"],
+    "description": "出现 ../ 或编码后的穿越序列，尝试读取 Web 根目录之外的文件。",
+    "match": {
+      "any": [
+        {"text": "regex:(\\.\\.(/|\\\\|%2f|%5c)){2,}"},
+        {"text": "regex:(?i)(etc/passwd|win\\.ini|boot\\.ini)"},
+        {"text": "regex:(?i)%2e%2e%2f"}
+      ]
+    },
+    "recommendations": [
+      "检查文件读取接口的路径规范化（realpath 校验）",
+      "确认是否读到敏感文件，评估影响面",
+      "封禁来源 IP 并加入监控"
+    ]
+  },
+  {
+    "id": "WEB-LFI-001",
+    "title": "本地/远程文件包含与伪协议利用",
+    "severity": "high",
+    "category": "web",
+    "confidence": 0.84,
+    "mitre": ["T1006"],
+    "description": "出现 php://filter、file://、data:// 等协议包装器或直接包含系统文件。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)(php|file|data|zip|phar)://"},
+        {"text": "regex:(?i)/etc/(passwd|shadow|hosts)"},
+        {"text": "regex:(?i)(\\.\\./){3,}etc/"}
+      ]
+    },
+    "recommendations": [
+      "限制文件包含的参数白名单",
+      "检查 include/require 是否拼接了用户输入",
+      "确认是否有文件被写入或外带"
+    ]
+  },
+  {
+    "id": "WEB-SSRF-001",
+    "title": "SSRF - 探测云元数据/内网服务",
+    "severity": "high",
+    "category": "web",
+    "confidence": 0.82,
+    "mitre": ["T1090"],
+    "description": "参数中出现 169.254.169.254 元数据地址或 gopher/dict 协议。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)169\\.254\\.169\\.254"},
+        {"text": "regex:(?i)(gopher|dict|ldap|tftp)://"},
+        {"text": "regex:(?i)(metadata/|latest/meta-data)"},
+        {"text": "regex:(?i)(\\?|&)(url|target|redirect|next|img)=https?://(127\\.0\\.0\\.1|localhost|10\\.|192\\.168\\.)"}
+      ]
+    },
+    "recommendations": [
+      "确认服务端是否对 url 参数做了白名单/内网地址校验",
+      "检查是否已获取到云凭证（重点看 169.254.169.254 的响应）",
+      "封禁来源 IP，收紧出口访问策略"
+    ]
+  },
+  {
+    "id": "WEB-LOG4J-001",
+    "title": "Log4Shell (CVE-2021-44228) 利用尝试",
+    "severity": "critical",
+    "category": "web",
+    "confidence": 0.93,
+    "mitre": ["T1190"],
+    "description": "请求头或参数中出现 ${jndi:ldap://...} 特征。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)\\$\\{jndi:(ldap|rmi|dns|http)"},
+        {"text": "regex:(?i)\\$\\{\\s*\\$\\{[^}]+\\}\\s*\\}"}
+      ]
+    },
+    "recommendations": [
+      "确认 Log4j 版本，升级到 2.17.1+",
+      "封禁来源 IP，检查是否有外连 LDAP/RMI 的回连记录",
+      "排查 JVM 是否已加载恶意类"
+    ]
+  },
+  {
+    "id": "WEB-WEBSHELL-001",
+    "title": "WebShell 上传/访问特征",
+    "severity": "critical",
+    "category": "web",
+    "confidence": 0.85,
+    "mitre": ["T1505.003"],
+    "description": "访问 .php/.jsp 文件并携带 cmd/pass 参数，或上传接口出现脚本文件。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)\\.(php|jsp|jspx|asp|aspx)\\?(\\w+=(cmd|exec|shell|pass|cmdline))"},
+        {"text": "regex:(?i)(eval|assert)\\s*\\(\\s*\\$_(POST|GET|REQUEST)"},
+        {"text": "regex:(?i)(upload|file).{0,20}\\.(php|jsp|aspx?)\\b"}
+      ]
+    },
+    "recommendations": [
+      "立即隔离该主机，保留内存与 Web 目录现场",
+      "检查上传目录中新增的脚本文件并做时间线",
+      "排查同网段其他主机是否被投放"
+    ]
+  },
+  {
+    "id": "WEB-SCAN-001",
+    "title": "目录/敏感文件扫描",
+    "severity": "low",
+    "category": "recon",
+    "confidence": 0.62,
+    "mitre": ["T1595.002"],
+    "weight_delta": -6,
+    "description": "请求 .git/config、.env、wp-admin 等典型扫描路径，多为工具批量探测。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)/(\\.git/|\\.env|\\.svn/|wp-admin|wp-login\\.php|phpmyadmin|admin\\.php|db\\.php|config\\.php\\.bak)"},
+        {"text": "regex:(?i)/(actuator|swagger-ui|druid/index\\.html|console/login)"}
+      ]
+    },
+    "recommendations": [
+      "确认是否存在对应敏感文件暴露",
+      "观察该 IP 后续是否升级为利用行为",
+      "批量扫描可只做记录，不必逐条处置"
+    ]
+  }
+]

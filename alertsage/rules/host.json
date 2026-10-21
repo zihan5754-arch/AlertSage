@@ -1,0 +1,68 @@
+[
+  {
+    "id": "HOST-PS-001",
+    "title": "PowerShell 编码命令执行",
+    "severity": "high",
+    "category": "host",
+    "confidence": 0.82,
+    "mitre": ["T1059.001"],
+    "description": "出现 -enc/-EncodedCommand 或 FromBase64String，攻击者常用以规避命令行审计。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)powershell(\\.exe)?[^\\n]{0,80}-(enc|encodedcommand)\\b"},
+        {"text": "regex:(?i)frombase64string\\s*\\("},
+        {"text": "regex:(?i)-w(indowstyle)?\\s+hidden"}
+      ]
+    },
+    "recommendations": [
+      "解码 base64 内容，确认执行了什么",
+      "检查父进程（Office/wscript 拉起 powershell 属高危）",
+      "隔离主机并抓取进程树与网络连接"
+    ]
+  },
+  {
+    "id": "HOST-REVSHELL-001",
+    "title": "反弹 Shell",
+    "severity": "critical",
+    "category": "host",
+    "confidence": 0.9,
+    "mitre": ["T1059.004"],
+    "description": "出现 /dev/tcp、nc -e、socat exec 等典型反弹 shell 命令。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)/dev/tcp/"},
+        {"text": "regex:(?i)\\bnc\\b[^\\n]{0,40}\\s-[a-z]*e\\s"},
+        {"text": "regex:(?i)socat\\s+.*exec:"},
+        {"text": "regex:(?i)bash\\s+-i\\s+>&"},
+        {"text": "regex:(?i)python[0-9.]*\\s+-c\\s+['\"]?import\\s+socket"}
+      ]
+    },
+    "recommendations": [
+      "立即断网隔离，保留内存镜像",
+      "查外连目标 IP 是否在情报库中命中",
+      "排查同源主机是否存在相同的持久化"
+    ]
+  },
+  {
+    "id": "HOST-MINER-001",
+    "title": "挖矿程序特征",
+    "severity": "high",
+    "category": "host",
+    "confidence": 0.8,
+    "mitre": ["T1496"],
+    "weight_delta": 4,
+    "description": "出现 stratum+tcp 矿池协议、xmrig 等挖矿程序特征。",
+    "match": {
+      "any": [
+        {"text": "regex:(?i)stratum\\+(tcp|ssl)://"},
+        {"text": "regex:(?i)\\b(xmrig|minerd|cpuminer|kdevtmpfsi|kinsing)\\b"},
+        {"text": "regex:(?i)(monero|randomx|--donate-level)"}
+      ]
+    },
+    "recommendations": [
+      "定位进程与启动方式（cron/systemd/容器），确认入侵入口",
+      "清理持久化并修补被利用的漏洞（常见为 Redis/Shiro/Log4j）",
+      "统计 CPU/带宽影响，评估是否横向"
+    ]
+  }
+]

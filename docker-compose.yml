@@ -1,0 +1,24 @@
+services:
+  alertsage:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # 阈值与行为基线
+      ALERTSAGE_TP_THRESHOLD: "45"
+      ALERTSAGE_FP_THRESHOLD: "22"
+      ALERTSAGE_CORRELATE_WINDOW: "600"
+      # 资产重要度（核心资产放大风险）
+      ALERTSAGE_ASSETS: '{"pay-api":1.2,"order-api":1.1,"test-*":0.7}'
+      # LLM：默认关闭，演示时打开并填 key
+      ALERTSAGE_LLM_ENABLED: "false"
+      ALERTSAGE_LLM_PROVIDER: "mock"
+      # ALERTSAGE_LLM_BASE_URL: "https://api.deepseek.com/v1"
+      # ALERTSAGE_LLM_MODEL: "deepseek-chat"
+      # ALERTSAGE_LLM_API_KEY: "sk-xxx"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
