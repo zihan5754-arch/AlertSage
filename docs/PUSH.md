@@ -1,4 +1,4 @@
-﻿# 推送到 GitHub
+# 推送到 GitHub
 
 代码已经在本地提交好了（`e6b2a35`），只差认证这一步。下面的操作 2 分钟能做完。
 
@@ -9,7 +9,23 @@
 
 ## 方式一：脚本（推荐）
 
-在 `C:\Users\16621\Desktop\github` 目录打开 PowerShell：
+脚本放在 `github` 目录或 `AlertSage` 目录里都能用，会自动找到 `.git` 所在目录。
+
+先做一次**只读预演**，确认路径对：
+
+```powershell
+cd C:\Users\16621\Desktop\github
+.\push.ps1 -DryRun
+```
+
+输出里应该能看到：
+
+```
+仓库目录: C:\Users\16621\Desktop\github\AlertSage
+远端地址: https://github.com/zihan5754-arch/AlertSage.git
+```
+
+确认无误后真正推送：
 
 ```powershell
 .\push.ps1
