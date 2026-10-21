@@ -1,5 +1,7 @@
 # AlertSage
 
+![AlertSage](docs/social-preview.png)
+
 > 面向蓝队的**可解释**告警研判引擎：把"这条告警要不要管"从人的经验，变成可复现、可评估、可解释的流水线。
 
 [![CI](https://github.com/zihan5754-arch/AlertSage/actions/workflows/ci.yml/badge.svg)](https://github.com/zihan5754-arch/AlertSage/actions/workflows/ci.yml)
