@@ -12,3 +12,4 @@ eval.json
 .DS_Store
 .idea/
 .vscode/
+push.ps1
